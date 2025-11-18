@@ -1,21 +1,23 @@
 import { Button, Frog } from 'frog'
-import { handle } from 'frog/vercel' // <-- BU SATIR KRİTİK!
+import { handle } from 'frog/vercel'
 import { Redis } from '@upstash/redis'
 
-// Vercel için ayar
+// NOT: Eğer dosyan 'api' klasöründeyse basePath: '/api' olmalı.
+// Eğer 'src' klasöründeyse basePath: '/' kalsın.
+// Biz garanti olsun diye '/api' yapalım:
 export const app = new Frog({
-  basePath: '/',
+  basePath: '/api', 
   title: 'Bitcoin Tahmin',
 })
 
 app.frame('/', async (c) => {
   const { buttonValue, status } = c
 
-  // HATA YAKALAMA BAŞLANGICI
   try {
+    // Veritabanı bağlantısı
     const redis = new Redis({
-      url: process.env.UPSTASH_REDIS_REST_URL!,
-      token: process.env.UPSTASH_REDIS_REST_TOKEN!,
+      url: process.env.UPSTASH_REDIS_REST_URL || '',
+      token: process.env.UPSTASH_REDIS_REST_TOKEN || '',
     })
 
     if (status === 'response' && buttonValue) {
@@ -89,6 +91,5 @@ app.frame('/', async (c) => {
   }
 })
 
-// ---> GİRİŞ KAPILARI (Bunu eklemezsek 404 Hatası alırsın) <---
 export const GET = handle(app)
 export const POST = handle(app)
