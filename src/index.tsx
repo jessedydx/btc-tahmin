@@ -1,28 +1,27 @@
 import { Button, Frog } from 'frog'
-// import { devtools } from 'frog/dev'
-// import { serveStatic } from 'frog/serve-static'
+import { handle } from 'frog/vercel' // <-- BU SATIR KRİTİK!
 import { Redis } from '@upstash/redis'
 
+// Vercel için ayar
 export const app = new Frog({
+  basePath: '/',
   title: 'Bitcoin Tahmin',
 })
 
 app.frame('/', async (c) => {
   const { buttonValue, status } = c
 
-  // HATA YAKALAMA (Güvenlik Ağı)
+  // HATA YAKALAMA BAŞLANGICI
   try {
     const redis = new Redis({
       url: process.env.UPSTASH_REDIS_REST_URL!,
       token: process.env.UPSTASH_REDIS_REST_TOKEN!,
     })
 
-    // OY VERME
     if (status === 'response' && buttonValue) {
       await redis.incr(buttonValue)
     }
 
-    // OYLARI ÇEKME
     const [rise, fall, stable] = await Promise.all([
       redis.get<number>('rise') || 0,
       redis.get<number>('fall') || 0,
@@ -31,7 +30,6 @@ app.frame('/', async (c) => {
 
     const total = (Number(rise) + Number(fall) + Number(stable)) || 1
 
-    // GÖRSEL OLUŞTURMA
     return c.res({
       image: (
         <div
@@ -83,7 +81,7 @@ app.frame('/', async (c) => {
     return c.res({
       image: (
         <div style={{ color: 'white', backgroundColor: 'red', fontSize: 40, padding: 50 }}>
-          HATA: Vercel Ayarlarını Kontrol Et!
+          HATA: .env Ayarları Eksik!
         </div>
       ),
       intents: [<Button.Reset>Tekrar Dene</Button.Reset>]
@@ -91,4 +89,6 @@ app.frame('/', async (c) => {
   }
 })
 
-// devtools(app, { serveStatic })
+// ---> GİRİŞ KAPILARI (Bunu eklemezsek 404 Hatası alırsın) <---
+export const GET = handle(app)
+export const POST = handle(app)
