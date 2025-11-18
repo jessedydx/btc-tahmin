@@ -1,12 +1,12 @@
+/** @jsxImportSource frog/jsx */
+
 import { Button, Frog } from 'frog'
 import { handle } from 'frog/vercel'
 import { Redis } from '@upstash/redis'
 
-// NOT: Eğer dosyan 'api' klasöründeyse basePath: '/api' olmalı.
-// Eğer 'src' klasöründeyse basePath: '/' kalsın.
-// Biz garanti olsun diye '/api' yapalım:
+// Eğer api klasöründeysen basePath: '/api' olmalı
 export const app = new Frog({
-  basePath: '/api', 
+  basePath: '/api',
   title: 'Bitcoin Tahmin',
 })
 
@@ -14,7 +14,6 @@ app.frame('/', async (c) => {
   const { buttonValue, status } = c
 
   try {
-    // Veritabanı bağlantısı
     const redis = new Redis({
       url: process.env.UPSTASH_REDIS_REST_URL || '',
       token: process.env.UPSTASH_REDIS_REST_TOKEN || '',

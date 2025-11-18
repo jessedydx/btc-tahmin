@@ -7,11 +7,12 @@
   },
   "dependencies": {
     "@hono/node-server": "latest",
+    "@types/node": "^24.10.1",
     "@upstash/redis": "^1.35.6",
-    "frog": "latest",
+    "frog": "^0.18.3",
     "hono": "^4"
   },
   "devDependencies": {
-    "typescript": "latest"
+    "typescript": "^5.9.3"
   }
 }
