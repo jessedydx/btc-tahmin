@@ -20,5 +20,5 @@
     "noFallthroughCasesInSwitch": true,
     "esModuleInterop": true
   },
-  "include": ["api"]
+  "include": ["api", "frog-fix.d.ts"]
 }

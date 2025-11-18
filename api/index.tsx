@@ -4,9 +4,8 @@ import { Button, Frog } from 'frog'
 import { handle } from 'frog/vercel'
 import { Redis } from '@upstash/redis'
 
-// Eğer api klasöründeysen basePath: '/api' olmalı
 export const app = new Frog({
-  basePath: '/api',
+  basePath: '/',
   title: 'Bitcoin Tahmin',
 })
 
@@ -14,15 +13,18 @@ app.frame('/', async (c) => {
   const { buttonValue, status } = c
 
   try {
+    // Veritabanı bağlantısı
     const redis = new Redis({
       url: process.env.UPSTASH_REDIS_REST_URL || '',
       token: process.env.UPSTASH_REDIS_REST_TOKEN || '',
     })
 
+    // Oy verme işlemi
     if (status === 'response' && buttonValue) {
       await redis.incr(buttonValue)
     }
 
+    // Sonuçları çekme
     const [rise, fall, stable] = await Promise.all([
       redis.get<number>('rise') || 0,
       redis.get<number>('fall') || 0,
